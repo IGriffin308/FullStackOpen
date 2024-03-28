@@ -4,23 +4,23 @@
     participant server
 
     browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
-    server-->>browser: text/html; charset=utf-8
+    server-->>browser: text/html charset=utf-8
 
     Note right of browser: The browser reloads, The server appends new note to JSON
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
-    server-->>browser: text/html; charset=utf-8
+    server-->>browser: text/html charset=utf-8
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
-    server-->>browser: text/css; charset=UTF-8
+    server-->>browser: text/css charset=UTF-8
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.js
-    server-->>browser: application/javascript; charset=UTF-8
+    server-->>browser: application/javascript charset=UTF-8
 
     Note right of browser: Returned Javascript makes call to retrieve JSON
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
-    server-->>browser: application/json; charset=utf-8
+    server-->>browser: application/json charset=utf-8
 
     Note right of browser: Browser renders returned JSON after it receives status 200 from previous request
 ```
