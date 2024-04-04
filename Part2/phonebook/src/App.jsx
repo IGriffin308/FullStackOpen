@@ -1,21 +1,35 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Filter, PersonForm, ShowPersons } from './components/Helpers.jsx';
-
+import axios from 'axios';
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [search, setSearch] = useState('');
   const [filteredPersons, setFilteredPersons] = useState([...persons]);
+  const [maxId, setMaxId] = useState(0);
+  const [error, setError] = useState(null);
+  const [loaded, setLoaded] = useState(false);
 
-  // Find the maximum id in the persons array
-  let maxId = persons.length > 0 ? Math.max(...persons.map(person => person.id)) : 0;
+  useEffect(() => {
+    // Fetch the initial data from the server
+    axios.get('http://localhost:3001/persons')
+      .then(response => {
+        setPersons(response.data);
+        setFilteredPersons(response.data);
+        // Find the maximum id in the persons array
+        let newId = response.data.length > 0 ? Math.max(...response.data.map(person => person.id)) : 0;
+        setMaxId(newId);
+      })
+      .then(() => {
+        setLoaded(true);
+      })
+      .catch(error => {
+        setError(error);
+        console.log('Error fetching data', error);
+      });
+  }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -27,7 +41,7 @@ const App = () => {
     // Create a new person object with the name, number and next id
     let payload = { name: newName, number: newNumber, id: maxId + 1};
     // Increment the maxId for the next person
-    maxId += 1;
+    setMaxId(maxId + 1);
     // Add the new person to the persons array and update the filteredPersons array
     setFilteredPersons(persons.concat(payload));
     setPersons(persons.concat(payload));
@@ -57,6 +71,22 @@ const App = () => {
     setFilteredPersons(persons.filter(person => person.name.toLowerCase().includes(event.target.value.toLowerCase())));
   };
 
+  if (!loaded) {
+    return (
+      <div>
+        <h2>Phonebook</h2>
+        <p>Loading data from the server...</p>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div>
+        <h2>Phonebook</h2>
+        <p>Error fetching data from the server</p>
+      </div>
+    );
+  };
   return (
     <div>
       <h2>Phonebook</h2>
