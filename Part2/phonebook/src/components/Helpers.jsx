@@ -22,11 +22,14 @@ const PersonForm = ({ handleSubmit, newName, handleNameChange, newNumber, handle
   );
 };
 
-const ShowPersons = ({ filteredPersons }) => {
+const ShowPersons = ({ filteredPersons, deletePerson }) => {
   return (
     <div>
       {filteredPersons.map(person => 
-        <div key={person.id}>{person.name} {person.number}</div>
+        <div key={person.id}>
+          {person.name}: {person.number}
+          <button onClick={(event) => deletePerson(event, person.id)}>delete</button>
+        </div>
       )}
     </div>
   );
